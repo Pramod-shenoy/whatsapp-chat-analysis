@@ -13,7 +13,6 @@ def fetch_stats(selected_user, df):
         df = df[df['user'] == selected_user]
 
     num_messages = df.shape[0]
-
     words = []
     for message in df['message']:
         words.extend(message.split())
@@ -40,14 +39,14 @@ def create_wordcloud(selected_user, df):
     temp = temp[temp['message'] != '<Media omitted>\n']
 
     def clean_text(text):
-        text = re.sub(r'[^a-zA-Z\s]', '', text)
-        return text
+        return re.sub(r'[^a-zA-Z\s]', '', text)
 
     temp['message'] = temp['message'].apply(clean_text)
     all_words = ' '.join(temp['message'])
     word_counts = Counter(all_words.split())
     wordcloud = WordCloud(width=500, height=500, min_font_size=10, background_color='white').generate_from_frequencies(word_counts)
-    return wordcloud
+
+    return wordcloud.to_array()
 
 def emoji_helper(selected_user, df):
     if selected_user != 'Overall':
@@ -57,7 +56,8 @@ def emoji_helper(selected_user, df):
     for message in df['message']:
         emojis.extend([c for c in message if c in emoji.EMOJI_DATA])
 
-    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))), columns=['emoji', 'count'])
+    emoji_counter = Counter(emojis).most_common()
+    emoji_df = pd.DataFrame(emoji_counter, columns=['Emoji', 'Count'])
     return emoji_df
 
 def most_common_words(selected_user, df, top_n=10):
@@ -68,13 +68,13 @@ def most_common_words(selected_user, df, top_n=10):
     temp = temp[temp['message'] != '<Media omitted>\n']
 
     def clean_text(text):
-        text = re.sub(r'[^a-zA-Z\s]', '', text)
-        return text
+        return re.sub(r'[^a-zA-Z\s]', '', text)
 
     temp['message'] = temp['message'].apply(clean_text)
     all_words = ' '.join(temp['message'])
     word_counts = Counter(all_words.split())
     most_common = word_counts.most_common(top_n)
+
     common_words_df = pd.DataFrame(most_common, columns=["Word", "Frequency"])
     return common_words_df
 
