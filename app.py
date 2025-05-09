@@ -1,7 +1,7 @@
 import streamlit as st
 import preprocessor, helper
 import matplotlib.pyplot as plt
-import seaborn as sns  # Make sure to import seaborn for heatmap
+import seaborn as sns
 
 st.sidebar.title("Whatsapp Chat Analyzer")
 
@@ -62,24 +62,22 @@ if uploaded_file is not None:
         df_wc = helper.create_wordcloud(selected_user, df)
         fig, ax = plt.subplots()
         ax.imshow(df_wc)
-        ax.axis('off')  # Hide axis
+        ax.axis('off')
         st.pyplot(fig)
 
-        # ✅ Emoji analysis (updated block)
-        st.title("Emoji Analysis")
+        # Emoji analysis
         emoji_df = helper.emoji_helper(selected_user, df)
+        st.title("Emoji Analysis")
 
         if emoji_df.empty:
-            st.info("😐 No emojis were used by this user.")
+            st.info("\U0001F610 No emojis were used by this user.")
         else:
             col1, col2 = st.columns(2)
-
             with col1:
                 st.dataframe(emoji_df)
-
             with col2:
                 fig, ax = plt.subplots()
-                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+                ax.pie(emoji_df['count'].head(), labels=emoji_df['emoji'].head(), autopct="%0.2f")
                 ax.axis("equal")
                 st.pyplot(fig)
 
@@ -92,7 +90,7 @@ if uploaded_file is not None:
         st.title("Monthly Timeline")
         timeline = helper.monthly_timeline(selected_user, df)
         fig, ax = plt.subplots()
-        ax.plot(timeline['month'], timeline['message'], color='green')  # Corrected column name
+        ax.plot(timeline['month'], timeline['message'], color='green')
         plt.xticks(rotation='vertical')
         st.pyplot(fig)
 
